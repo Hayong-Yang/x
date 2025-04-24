@@ -1,5 +1,5 @@
 import express from "express";
-import hosts from "./router/posts.mjs";
+import postRouter from "./router/posts.mjs";
 import authRouter from "./router/auth.mjs";
 
 const app = express();

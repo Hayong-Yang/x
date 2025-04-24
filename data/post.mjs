@@ -47,15 +47,41 @@ export async function getAll() {
 }
 
 // 사용자 아이디(userid)에 대한 포스트를 리턴
+// filter : 조건을 만족하는 모든 요소를 배열로 리턴
 export async function getAllByUserid(userid) {
-  return posts.filter((post) => {
-    post.userid === userid;
-  });
+  return posts.filter((post) => post.userid === userid);
 }
 
 // 글 번호(id)에 대한 포스트를 리턴
+// find : 조건을 만족하는 첫번째 요소를 리턴
 export async function getByid(id) {
-  return posts.find((post) => {
-    post.id === id;
-  });
+  return posts.find((post) => post.id === id);
+}
+
+// 포스트 작성
+// 자바스크립트 문법 특징: 객체 안의 key : value 이름이 같으면 생략 가능.
+export async function create(userid, name, text) {
+  const post = {
+    id: Date.now().toString(),
+    userid,
+    name,
+    text,
+    createdAt: Date.now().toString(),
+  };
+  posts = [post, ...posts];
+  return posts;
+}
+
+// 포스트 변경
+export async function update(id, text) {
+  const post = posts.find((post) => post.id === id);
+  if (post) {
+    post.text = text; // 입력한 포스트를 기존 포스트 대신 할당.
+  }
+  return post;
+}
+
+// 포스트 삭제
+export async function remove(id) {
+  posts = posts.filter((post) => post.id !== id);
 }
