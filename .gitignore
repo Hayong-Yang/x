@@ -1,0 +1,10 @@
+# DB
+.env
+
+
+# node.js
+node_modules/
+package-lock.json
+
+#  MAC OS
+.DS_Store
