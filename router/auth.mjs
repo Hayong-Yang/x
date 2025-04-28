@@ -7,8 +7,8 @@ import { validate } from "../middleware/validator.mjs";
 const router = express.Router();
 
 const validateLogin = [
-  body("userid")
-    .trim()
+  body("userid") // body에서 userid 가져오고
+    .trim() // trim으로 양옆 제거해주고..
     .isLength({ min: 4 })
     .withMessage("최소 4자이상 입력") // isLength가 4자 미만일때 출력하는 메세지
     .matches(/^[a-zA-Z0-9]*$/) // isLength 만족시 넘어오는 조건
