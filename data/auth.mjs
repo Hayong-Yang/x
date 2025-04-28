@@ -55,19 +55,7 @@ export async function singUp(userid, password, name, email) {
 }
 
 // 로그인 : 아이디 패스워드 가진 사람 있으면 로그인
-// export async function login(userid) {
-//   const id = users.filter((user) => user.userid === userid);
-//   return id;
-// }
-// export async function login(password) {
-//   const pw = users.filter((user) => user.password === password);
-//   return pw;
-// }
-// // 회원정보 조회
-// export async function userInfo(id) {
-//   return users.filter((user) => user.id === id);
-// }
-
+// 로그인
 export async function login(userid, password) {
   const user = users.find(
     (user) => user.userid === userid && user.password === password
@@ -75,4 +63,12 @@ export async function login(userid, password) {
   return user;
 }
 
-// 로그인 유지
+//
+export async function findByUserid(userid) {
+  const user = users.find((user) => user.userid === userid);
+  return user;
+}
+
+export async function findByid(id) {
+  return users.find((user) => user.id === id);
+}
