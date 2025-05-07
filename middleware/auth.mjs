@@ -14,16 +14,17 @@
 
 import jwt from "jsonwebtoken";
 import * as authRepository from "../data/auth.mjs";
-import { response } from "express";
+import { response } from "express"; // 이거 불필요
 import { config } from "../config.mjs";
 
 const AUTH_ERROR = { message: "인증에러" };
 
 export const isAuth = async (req, res, next) => {
-  const authHeader = req.get("Authorization");
+  const authHeader = req.get("Authorization"); // 1. 요청 헤더에서 Authorization 값을 추출
   console.log(authHeader);
 
   if (!(authHeader && authHeader.startsWith("Bearer "))) {
+    // 2. Bearer {토큰} 형식인지 확인
     console.log("헤더 에러");
     return res.status(401).json(AUTH_ERROR);
   }
@@ -31,11 +32,13 @@ export const isAuth = async (req, res, next) => {
   console.log(token);
 
   jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
+    //3. jsonwebtoken.verify()로 토큰 검증
     if (error) {
       console.log("토큰 에러");
       return res.status(401).json(AUTH_ERROR);
     }
     console.log(decoded.id);
+    //4.처음에 토큰을 id로 만들었기 때문에, 복호화된 토큰은 id임. id를 기반으로 DB에서 유저 조회
     const user = await authRepository.findByid(decoded.id);
     if (!user) {
       console.log("아이디 없음");
@@ -43,7 +46,7 @@ export const isAuth = async (req, res, next) => {
     }
     console.log("user.id:", user.id);
     console.log("user.userid:", user.userid);
-    req.userid = user.userid;
+    req.userid = user.userid; // 5. 유효한 유저이면 req.userid에 넣고 다음 단계 진행 (next())
     next();
   });
 };
