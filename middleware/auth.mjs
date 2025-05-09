@@ -37,16 +37,16 @@ export const isAuth = async (req, res, next) => {
       console.log("토큰 에러");
       return res.status(401).json(AUTH_ERROR);
     }
-    console.log(decoded.id);
+    console.log(decoded.idx);
     //4.처음에 토큰을 id로 만들었기 때문에, 복호화된 토큰은 id임. id를 기반으로 DB에서 유저 조회
-    const user = await authRepository.findByid(decoded.id);
+    const user = await authRepository.findByid(decoded.idx);
     if (!user) {
       console.log("아이디 없음");
       return res.status(401).json(AUTH_ERROR);
     }
-    console.log("user.id:", user.id);
+    console.log("user.id:", user.idx);
     console.log("user.userid:", user.userid);
-    req.userid = user.userid; // 5. 유효한 유저이면 req.userid에 넣고 다음 단계 진행 (next())
+    req.useridx = user.idx; // 5. 유효한 유저이면 req.userid에 넣고 다음 단계 진행 (next())
     next();
   });
 };

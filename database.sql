@@ -19,3 +19,11 @@ create table posts (
 
 select * from users;
 select * from posts;
+
+select * from users where userid='apple';
+insert into users(userid, password, name, email, url) values ('apple','1111','김사과','apple@apple.com', 'https://randomuser.me/api/portraits/women/32.jpg');
+select * from users where idx=5;
+
+insert into posts (useridx, text) values ('5','안녕하세요!');
+
+select u.userid, u.name, u.url, p.idx, p.useridx, p.text, p.createAt from users as u join posts as p on u.idx =p.useridx

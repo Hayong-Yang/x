@@ -7,13 +7,13 @@ const secretKey = config.jwt.secretKey;
 const bcryptSaltRounds = config.bcrypt.saltRounds;
 const jwtExpiresInDays = config.jwt.expiresInSec;
 
-async function createJwtToken(id) {
-  return jwt.sign({ id }, secretKey, { expiresIn: jwtExpiresInDays });
+async function createJwtToken(idx) {
+  return jwt.sign({ idx }, secretKey, { expiresIn: jwtExpiresInDays });
 }
 
 // 회원가입 함수.
 export async function newSignUp(req, res, next) {
-  const { userid, password, name, email } = req.body;
+  const { userid, password, name, email, url } = req.body;
   // 회원 중복체크
   const found = await authRepository.findByUserid(userid);
   if (found) {
@@ -21,9 +21,15 @@ export async function newSignUp(req, res, next) {
   }
   // 비밀번호 해시화
   const hashed = bcrypt.hashSync(password, bcryptSaltRounds);
-  const users = await authRepository.singUp(userid, hashed, name, email); //이제 password대신 hashed 넣기
+  const users = await authRepository.signUp({
+    userid,
+    password: hashed,
+    name,
+    email,
+    url,
+  }); //이제 password대신 hashed 넣기
   // 사용자 아이디 토큰화
-  const token = await createJwtToken(users.id);
+  const token = await createJwtToken(users.idx);
   console.log(token);
   if (users) {
     // 토큰을 이제 사용자에게 보내줌.
@@ -60,6 +66,6 @@ export async function login(req, res, next) {
   if (!isValidPassword) {
     return res.status(401).json({ message: "아이디 또는 비밀번호 확인" });
   }
-  const token = await createJwtToken(user.id);
+  const token = await createJwtToken(user.idx);
   res.status(200).json({ token, userid });
 }
