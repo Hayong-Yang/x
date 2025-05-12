@@ -1,33 +1,35 @@
-import MongoDb, { ObjectId } from "mongodb";
-import { getUsers } from "../db/database.mjs";
-const ObjectID = MongoDb.ObjectId;
+import Mongoose from "mongoose";
+import { useVirtualId } from "../db/database.mjs";
+
+// 1.몽구스 스키마 만들기
+const userSchema = new Mongoose.Schema(
+  {
+    userid: { type: String, require: true },
+    name: { type: String, require: true },
+    email: { type: String, require: true },
+    password: { type: String, require: true },
+    url: String,
+  },
+  { versionKey: false }
+);
+// 2. id 간편사용
+useVirtualId(userSchema);
+
+// 3. 컬렉션 만들기_ 컬렉션 이름은 단수로 쓰기(s가 끝에 자동으로 붙기때문!)
+const User = Mongoose.model("User", userSchema);
 
 // 회원가입 : 배열에 객체 추가
 export async function createUser(user) {
-  return getUsers()
-    .insertOne(user)
-    .then((result) => result.insertedID.toString());
-}
-
-// 로그인 : 아이디 패스워드 가진 사람 있으면 로그인
-// 로그인
-export async function login(userid, password) {
-  const user = users.find(
-    (user) => user.userid === userid && user.password === password
-  );
-  return user;
+  return new User(user).save().then((data) => data.id);
 }
 
 //
 export async function findByUserid(userid) {
-  return getUsers().find({ userid }).next().then(mapOptionalUser);
+  return User.findOne({ userid });
 }
 
 export async function findByid(id) {
-  return getUsers()
-    .find({ _id: new ObjectID(id) })
-    .next()
-    .then(mapOptionalUser);
+  return User.findById(id);
 }
 
 // user._id 에서 _id는 객체형식임. 따라서 이걸 값 비교하려면 문자열로 바꿔야 함.
