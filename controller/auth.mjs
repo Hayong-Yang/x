@@ -13,7 +13,7 @@ async function createJwtToken(id) {
 
 // 회원가입 함수.
 export async function newSignUp(req, res, next) {
-  const { userid, password, name, email } = req.body;
+  const { userid, password, name, email, url } = req.body;
   // 회원 중복체크
   const found = await authRepository.findByUserid(userid);
   if (found) {
@@ -21,7 +21,13 @@ export async function newSignUp(req, res, next) {
   }
   // 비밀번호 해시화
   const hashed = bcrypt.hashSync(password, bcryptSaltRounds);
-  const users = await authRepository.singUp(userid, hashed, name, email); //이제 password대신 hashed 넣기
+  const users = await authRepository.createUser({
+    userid,
+    password: hashed,
+    name,
+    email,
+    url,
+  }); //이제 password대신 hashed 넣기
   // 사용자 아이디 토큰화
   const token = await createJwtToken(users.id);
   console.log(token);

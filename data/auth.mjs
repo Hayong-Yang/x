@@ -1,74 +1,39 @@
-let users = [
+import Mongoose from "mongoose";
+import { useVirtualId } from "../db/database.mjs";
+
+// 1.몽구스 스키마 만들기
+const userSchema = new Mongoose.Schema(
   {
-    id: "1",
-    userid: "apple",
-    password: "1111",
-    name: "김사과",
-    email: "apple@apple.com",
-    url: "https://randomuser.me/api/portraits/women/32.jpg",
+    userid: { type: String, require: true },
+    name: { type: String, require: true },
+    email: { type: String, require: true },
+    password: { type: String, require: true },
+    url: String,
   },
-  {
-    id: "2",
-    userid: "banana",
-    password: "2222",
-    name: "반하나",
-    email: "banana@banana.com",
-    url: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
-  {
-    id: "3",
-    userid: "orange",
-    password: "3333",
-    name: "오렌지",
-    email: "orange@orange.com",
-    url: "https://randomuser.me/api/portraits/men/11.jpg",
-  },
-  {
-    id: "4",
-    userid: "berry",
-    password: "4444",
-    name: "배애리",
-    email: "orange@orange.com",
-    url: "https://randomuser.me/api/portraits/women/52.jpg",
-  },
-  {
-    id: "5",
-    userid: "melon",
-    password: "5555",
-    name: "이메론",
-    email: "orange@orange.com",
-    url: "https://randomuser.me/api/portraits/men/29.jpg",
-  },
-];
+  { versionKey: false }
+);
+// 2. id 간편사용
+useVirtualId(userSchema);
+
+// 3. 컬렉션 만들기_ 컬렉션 이름은 단수로 쓰기(s가 끝에 자동으로 붙기때문!)
+const User = Mongoose.model("User", userSchema);
 
 // 회원가입 : 배열에 객체 추가
-export async function singUp(userid, password, name, email) {
-  const user = {
-    id: Date.now().toString(),
-    userid,
-    password,
-    name,
-    email,
-  };
-  users = [user, ...users];
-  return users;
-}
-
-// 로그인 : 아이디 패스워드 가진 사람 있으면 로그인
-// 로그인
-export async function login(userid, password) {
-  const user = users.find(
-    (user) => user.userid === userid && user.password === password
-  );
-  return user;
+export async function createUser(user) {
+  return new User(user).save().then((data) => data.id);
 }
 
 //
 export async function findByUserid(userid) {
-  const user = users.find((user) => user.userid === userid);
-  return user;
+  return User.findOne({ userid });
 }
 
 export async function findByid(id) {
-  return users.find((user) => user.id === id);
+  return User.findById(id);
+}
+
+// user._id 에서 _id는 객체형식임. 따라서 이걸 값 비교하려면 문자열로 바꿔야 함.
+// 따라서 user 컬렉션에서 id란 컬럼을 새로 만드는데 그 안의 값은 _id를 문자열로 바꾼 값을 넣겠다.
+function mapOptionalUser(user) {
+  return user ? { ...user, id: user._id.toString() } : user;
 }
